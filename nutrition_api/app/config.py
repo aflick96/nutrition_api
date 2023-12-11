@@ -22,10 +22,10 @@ class prodConfig():
     FLASK_ENV = 'production'
     SESSION_PERMANENT=False
     DEBUG = False
-    DB_NAME = ''
-    DB_USERNAME = ''
-    DB_PASSWORD = ''
-    DB_HOST = ''
-    DB_PORT = 5432
+    DB_NAME = os.environ.get('DB_NAME')
+    DB_USERNAME = os.environ.get('DB_USERNAME')
+    DB_PASSWORD = os.environ.get('DB_PASSWORD')
+    DB_HOST = os.environ.get('DB_HOST')
+    DB_PORT = os.environ.get('DB_PORT')
     SQLALCHEMY_DATABASE_URI = f'postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False

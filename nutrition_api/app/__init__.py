@@ -5,12 +5,10 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app, resources={r'/search/*' : {'origins': '*'}})
-app.config.from_object('nutrition_api.app.config.devConfig')
+app.config.from_object('nutrition_api.app.config.prodConfig')
 
 
 from .views.searchViews import searchViews
-# from .views.databaseViews import databaseViews
-# app.register_blueprint(databaseViews, url_prefix='/database')
 app.register_blueprint(searchViews, url_prefix='/search')
 
 db.init_app(app)
