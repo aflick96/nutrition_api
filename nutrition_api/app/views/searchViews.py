@@ -25,5 +25,23 @@ def getFoodNameSuggestions():
         return jsonify(res)
     else:
         return jsonify('Null')
+    
+@searchViews.route('/getFoodNutrientFacts')
+def getFoodNutrients():
+    q = request.args.get('foodid', default='', type=str)
+    try:
+        food_id = int(q)
+    except ValueError:
+        return jsonify({'error': 'Invalid FoodID'}), 400
+    
+    res = db.session.query(FoodNutrients, Nutrients).join(Nutrients, FoodNutrients.NutrientID == Nutrients.NutrientID).filter(FoodNutrients.FoodID == food_id).all()
 
+    nutrients_data = []
+
+    for food_nutrient, nutrient in res:
+        nutrient_info = nutrient.to_dict()
+        nutrient_info.update(food_nutrient.to_dict())
+        nutrients_data.append(nutrient_info)
+
+    return jsonify(nutrients_data)
 
