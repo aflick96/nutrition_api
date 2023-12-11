@@ -1,6 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy_utils.types import TSVectorType
+from sqlalchemy_searchable import make_searchable
 
 db = SQLAlchemy()
+make_searchable(db.metadata)
 
 class Nutrients(db.Model):
     NutrientID = db.Column(db.Integer, primary_key=True)
@@ -41,6 +44,7 @@ class FoodItems(db.Model):
     FoodName = db.Column(db.String(1000), nullable=False)
     FoodCategoryID = db.Column(db.Integer, db.ForeignKey('food_categories.FoodCategoryID'))
     BrandID = db.Column(db.Integer, db.ForeignKey('brands.BrandID'))
+    FoodNameSearchVector = db.Column(TSVectorType('FoodName'))
 
     category = db.relationship('FoodCategories', backref=db.backref('food_items', lazy=True))
     brand = db.relationship('Brands', backref=db.backref('food_items', lazy=True))
@@ -50,7 +54,8 @@ class FoodItems(db.Model):
             'FoodID': self.FoodID,
             'FoodName': self.FoodName,
             'FoodCategoryID': self.FoodCategoryID,
-            'BrandID': self.BrandID
+            'BrandID': self.BrandID,
+            'FoodNameSearchVector': self.FoodNameSearchVector
         }
     
     def __repr__(self):
