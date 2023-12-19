@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from enum import unique, Enum as E
 from sqlalchemy_utils.types import TSVectorType
 from sqlalchemy_searchable import make_searchable
 
@@ -73,8 +74,72 @@ class FoodNutrients(db.Model):
             'NutrientID': self.NutrientID,
             'NutrientAmount': self.NutrientAmount
         }
+    
+class Orientation(E):
+    FRONT = 'Front'
+    BACK = 'Back'
+    NONE = 'None'
 
+class MuscleType(E):
+    PRIMARY = 'Primary'
+    SECONDARY = 'Secondary'
 
+class Muscle(db.Model):
+    __tablename__ = 'muscles'
+    MuscleID = db.Column(db.Integer, primary_key=True)
+    Name = db.Column(db.String(200), nullable=False)
+    Orientation = db.Column(db.Enum(Orientation))
 
+    def to_dict(self):
+        return {
+            'MuscleID': self.MuscleID,
+            'Name': self.Name,
+            'Orientation': self.Orientation.value
+        }
 
+class Exercise(db.Model):
+    __tablename__ = 'exercises'
+    ExerciseID = db.Column(db.Integer, primary_key=True)
+    Name = db.Column(db.String(1000), nullable=False)
+
+    def to_dict(self):
+        return {
+            'ExerciseID': self.ExerciseID,
+            'Name': self.Name
+        }
+    
+class Equipment(db.Model):
+    __tablename__ = 'equipment'
+    EquipmentID = db.Column(db.Integer, primary_key=True)
+    Name = db.Column(db.String(1000), nullable=False)
+
+    def to_dict(self):
+        return {
+            'EquipmentID': self.EquipmentID,
+            'Name': self.Name
+        }
+
+class ExerciseEquipment(db.Model):
+    __tablename__ = 'exercise_equipment'
+    ExerciseID = db.Column(db.Integer, db.ForeignKey('exercises.ExerciseID'), primary_key=True)
+    EquipmentID = db.Column(db.Integer, db.ForeignKey('equipment.EquipmentID'), primary_key=True)
+
+    def to_dict(self):
+        return {
+            'ExerciseID': self.ExerciseID,
+            'EquipmentID': self.EquipmentID
+        }
+
+class ExerciseMuscle(db.Model):
+    __tablename__ = 'exercise_muscle'
+    ExerciseID = db.Column(db.Integer, db.ForeignKey('exercises.ExerciseID'), primary_key=True)
+    MuscleID = db.Column(db.Integer, db.ForeignKey('muscles.MuscleID'), primary_key=True)
+    Type = db.Column(db.Enum(MuscleType))
+
+    def to_dict(self):
+        return {
+            'ExerciseID': self.ExerciseID,
+            'MuscleID': self.MuscleID,
+            'Type': self.Type.value
+        }
 
