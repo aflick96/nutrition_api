@@ -1,11 +1,11 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy_utils.types import TSVectorType
 from sqlalchemy_searchable import search
-from ..models import db, Nutrients, Brands, FoodCategories, FoodItems, FoodNutrients
+from ...models import db, Nutrients, Brands, FoodCategories, FoodItems, FoodNutrients
 
-searchViews = Blueprint('searchViews', __name__)
+foodSearchViews = Blueprint('foodSearchViews', __name__)
 
-@searchViews.route('/getFoodNames')
+@foodSearchViews.route('/getFoodNames')
 def getFoodNames():
     q = request.args.get('keyword', default='', type=str)
     food_items = FoodItems.query.filter(FoodItems.FoodName.ilike(f'{q}%')).all()
@@ -15,7 +15,7 @@ def getFoodNames():
     else:
         return jsonify({'result': 'No result for {}'.format(q)})
     
-@searchViews.route('/getFoodNames/fuzzySearch')
+@foodSearchViews.route('/getFoodNames/fuzzySearch')
 def getFoodNameSuggestions():
     q = request.args.get('keyword', default='', type=str)    
     search_query = search(FoodItems.query, q)
@@ -26,7 +26,7 @@ def getFoodNameSuggestions():
     else:
         return jsonify('Null')
     
-@searchViews.route('/getFoodNutrientFacts')
+@foodSearchViews.route('/getFoodNutrientFacts')
 def getFoodNutrients():
     q = request.args.get('foodid', default='', type=str)
     try:

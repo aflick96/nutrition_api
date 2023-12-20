@@ -118,6 +118,17 @@ class Equipment(db.Model):
             'EquipmentID': self.EquipmentID,
             'Name': self.Name
         }
+    
+class Gym(db.Model):
+    __tablename__ = 'gym'
+    GymID = db.Column(db.Integer, primary_key=True)
+    Name = db.Column(db.String(100), nullable=False)
+
+    def to_dict(self):
+        return {
+            'GymID': self.GymID,
+            'Name': self.Name
+        }
 
 class ExerciseEquipment(db.Model):
     __tablename__ = 'exercise_equipment'
@@ -143,3 +154,15 @@ class ExerciseMuscle(db.Model):
             'Type': self.Type.value
         }
 
+
+class EquipmentGym(db.Model):
+    __tablename__ = 'equipment_gym'
+    EquipmentID = db.Column(db.Integer, db.ForeignKey('equipment.EquipmentID'), primary_key=True)
+    GymID = db.Column(db.Integer, db.ForeignKey('gym.GymID'), primary_key=True)
+
+    def to_dict(self):
+        return {
+            'EquipmentID': self.EquipmentID,
+            'GymID': self.GymID,
+        }
+    

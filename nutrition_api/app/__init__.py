@@ -5,13 +5,15 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app, resources={r'/search/*' : {'origins': '*'}})
-app.config.from_object('nutrition_api.app.config.prodConfig')
+app.config.from_object('nutrition_api.app.config.devConfig')
 
-from .views.searchViews import searchViews
-from .views.database.workoutViews import workoutDatabaseViews
+from .views.search.foodSearchViews import foodSearchViews
+from .views.search.workoutSearchViews import workoutSearchViews
+from .views.database.workoutDatabaseViews import workoutDatabaseViews
 
-app.register_blueprint(searchViews, url_prefix='/search')
-app.register_blueprint(workoutDatabaseViews, url_prefix='/database')
+app.register_blueprint(foodSearchViews, url_prefix='/search/food')
+app.register_blueprint(workoutSearchViews, url_prefix='/search/workout')
+app.register_blueprint(workoutDatabaseViews, url_prefix='/database/workout')
 
 db.init_app(app)
 
