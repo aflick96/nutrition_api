@@ -39,7 +39,7 @@ def getExercisesByGymType():
                 EquipmentGym, EquipmentGym.EquipmentID == Equipment.EquipmentID
             ).filter(EquipmentGym.GymID == gym.GymID).all()
 
-            equipment = [{'Name': e.Name} for e in eq]
+            equipment = [{'EquipmentID': e.EquipmentID, 'Name': e.Name} for e in eq]
 
             return jsonify(equipment)
 
