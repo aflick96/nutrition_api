@@ -166,3 +166,47 @@ class EquipmentGym(db.Model):
             'GymID': self.GymID,
         }
     
+class Plan(db.Model):
+    __tablename__ = 'prebuilt_plans'
+    PlanID = db.Column(db.Integer, primary_key=True)
+    Name = db.Column(db.String(100), nullable=False)
+    Duration = db.Column(db.Integer, nullable=False)
+    DaysPerWeek = db.Column(db.Integer, nullable=False)
+    Type = db.Column(db.String, nullable=False)
+    GymID = db.Column(db.Integer, db.ForeignKey('gym.GymID'))
+
+    def to_dict(self):
+        return {
+            'PlanID': self.PlanID,
+            'Name': self.Name,
+            'Duration': self.Duration,
+            'DaysPerWeek': self.DaysPerWeek,
+            'Type': self.Type,
+            'GymID': self.GymID
+        }
+
+class PlanWorkout(db.Model):
+    __tablename__ = 'prebuilt_plan_workouts'
+    PlanWorkoutID = db.Column(db.Integer, primary_key=True)
+    PlanID = db.Column(db.Integer, db.ForeignKey('prebuilt_plans.PlanID'))
+    WeekNumber = db.Column(db.Integer, nullable=False)
+    MuscleGroups = db.Column(db.String(250), nullable=False)
+
+    def to_dict(self):
+        return {
+            'PlanWorkoutID': self.PlanWorkoutID,
+            'PlanID': self.PlanID,
+            'WeekNumber': self.WeekNumber,
+            'MuscleGroups': self.MuscleGroups
+        }
+
+class PlanWorkoutExercise(db.Model):
+    __tablename__ = 'prebuilt_plan_workout_exercises'
+    PlanWorkoutID = db.Column(db.Integer, db.ForeignKey('prebuilt_plan_workouts.PlanWorkoutID'), primary_key=True)
+    ExerciseID = db.Column(db.Integer, db.ForeignKey('exercises.ExerciseID'), primary_key=True)
+
+    def to_dict(self):
+        return {
+            'PlanWorkoutID': self.PlanWorkoutID,
+            'ExerciseID': self.ExerciseID
+        }

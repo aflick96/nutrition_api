@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from ...models import db, Muscle, Exercise, Equipment, ExerciseEquipment, ExerciseMuscle, EquipmentGym, Gym, Orientation, MuscleType
+from ...models import db, Muscle, Exercise, Equipment, ExerciseEquipment, ExerciseMuscle, EquipmentGym, Gym, Orientation, MuscleType, Plan, PlanWorkout, PlanWorkoutExercise
 import os
 import ijson
 from sqlalchemy.dialects.postgresql import insert
@@ -210,6 +210,92 @@ def populateEquipmentGymTable():
             return jsonify({"error": f"Failed to insert data: {str(e)}"}), 500  
 
 
+@workoutDatabaseViews.route('/populate/PlanTable')
+def populatePlanTable():
+    with open(os.path.join(json_file_path, 'Pre Plan Table.json'), 'rb') as f:
+        for data in ijson.items(f, 'item'):
+
+            stmt = insert(Plan).values(
+                PlanID=data.get('PlanID'),
+                Name=data.get('Name'),
+                Duration=data.get('Duration'),
+                DaysPerWeek=data.get('DaysPerWeek'),
+                Type=data.get('Type'),
+                GymID=data.get('GymID')
+            )
+
+            not_stmt = stmt.on_conflict_do_nothing(
+                index_elements=['PlanID']
+            )
+
+            db.session.execute(not_stmt)
+
+        try:
+            db.session.commit()
+            f.close()
+            return jsonify({'message': 'Successfully loaded Plan Table data.'})
+        
+        except Exception as e:
+            db.session.rollback()
+            f.close()
+            return jsonify({"error": f"Failed to insert data: {str(e)}"}), 500  
+
+@workoutDatabaseViews.route('/populate/PlanWorkoutTable')
+def populatePlanWorkoutTable():
+    with open(os.path.join(json_file_path, 'Pre Plan Workout Table.json'), 'rb') as f:
+        for data in ijson.items(f, 'item'):
+
+            stmt = insert(PlanWorkout).values(
+                PlanWorkoutID=data.get('PlanWorkoutID'),
+                PlanID=data.get('PlanID'),
+                WeekNumber=data.get('WeekNumber'),
+                MuscleGroups=data.get('MuscleGroups'),
+            )
+
+            not_stmt = stmt.on_conflict_do_nothing(
+                index_elements=['PlanWorkoutID']
+            )
+
+            db.session.execute(not_stmt)
+
+        try:
+            db.session.commit()
+            f.close()
+            return jsonify({'message': 'Successfully loaded Plan Workout Table data.'})
+        
+        except Exception as e:
+            db.session.rollback()
+            f.close()
+            return jsonify({"error": f"Failed to insert data: {str(e)}"}), 500  
+
+@workoutDatabaseViews.route('/populate/PlanWorkoutExerciseTable')
+def populatePlanWorkoutExerciseTable():
+    with open(os.path.join(json_file_path, 'Pre Workout Exercise Table.json'), 'rb') as f:
+        for data in ijson.items(f, 'item'):
+
+            stmt = insert(PlanWorkoutExercise).values(
+                PlanWorkoutID=data.get('PlanWorkoutID'),
+                ExerciseID=data.get('ExerciseID'),
+            )
+
+            not_stmt = stmt.on_conflict_do_nothing(
+                index_elements=['PlanWorkoutID','ExerciseID']
+            )
+
+            db.session.execute(not_stmt)
+
+        try:
+            db.session.commit()
+            f.close()
+            return jsonify({'message': 'Successfully loaded Plan Workout Exercise Table data.'})
+        
+        except Exception as e:
+            db.session.rollback()
+            f.close()
+            return jsonify({"error": f"Failed to insert data: {str(e)}"}), 500  
+
+
+
 @workoutDatabaseViews.route('/get')
 def getData():
     q = request.args.get(
@@ -232,6 +318,8 @@ def getData():
         data = ExerciseMuscle.query.all()
     elif q == 'EquipmentGym':
         data = EquipmentGym.query.all()
+    elif q == 'Plan':
+        data = Plan.query.all()
     else:
         return jsonify({'error': 'no table named {}'.format(q)})
 
