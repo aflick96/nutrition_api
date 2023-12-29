@@ -75,3 +75,9 @@ def getPrebuiltPlansAvailable():
 
     # Return the matching PlanID's
     return jsonify({'matching_plan_ids': matching_plan_ids})
+
+@workoutSearchViews.route('/getPrebuiltPlans')
+def getPrebuiltPlans():
+    data = Plan.query.all()
+    res = [d.to_dict() for d in data]
+    return jsonify(res)

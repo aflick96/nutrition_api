@@ -5,7 +5,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app, resources={r'/search/*' : {'origins': '*'}})
-app.config.from_object('nutrition_api.app.config.prodConfig')
+app.config.from_object('nutrition_api.app.config.devConfig')
 
 from .views.search.foodSearchViews import foodSearchViews
 from .views.search.workoutSearchViews import workoutSearchViews
